@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class SamuraiDuel : MonoBehaviour
@@ -8,15 +8,14 @@ public class SamuraiDuel : MonoBehaviour
 
     private Animator animator1;
     private Animator animator2;
-    private bool isPlayer1Attacker = true; 
-    private bool gameOver = false; 
+    private bool isPlayer1Attacker = true;
+    private bool gameOver = false;
 
     [Header("Game Settings")]
-    public float defendTimeWindow = 0.5f; 
+    public float defendTimeWindow = 0.5f;
 
     void Start()
     {
-        
         if (player1 != null)
             animator1 = player1.GetComponent<Animator>();
         if (player2 != null)
@@ -28,27 +27,27 @@ public class SamuraiDuel : MonoBehaviour
 
     void Update()
     {
-        if (gameOver) return; // Stop game 
+        if (gameOver) return;
 
         if (isPlayer1Attacker)
         {
-            if (Input.GetKeyDown(KeyCode.Space)) // Player 1 attacks
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("Player 1 Slash!");
-                StartAttack(animator1, KeyCode.Return, animator2);
+                Debug.Log("Player 1 Attacks!");
+                StartAttack(animator1, KeyCode.Return, KeyCode.LeftArrow, KeyCode.RightArrow, animator2);
             }
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Return)) // Player 2 attacks
+            if (Input.GetKeyDown(KeyCode.Return))
             {
-                Debug.Log("Player 2 Slash!");
-                StartAttack(animator2, KeyCode.Space, animator1);
+                Debug.Log("Player 2 Attacks!");
+                StartAttack(animator2, KeyCode.Space, KeyCode.A, KeyCode.D, animator1);
             }
         }
     }
 
-    private void StartAttack(Animator attackerAnimator, KeyCode defendKey, Animator defenderAnimator)
+    private void StartAttack(Animator attackerAnimator, KeyCode defendKey, KeyCode dodgeLeftKey, KeyCode dodgeRightKey, Animator defenderAnimator)
     {
         if (attackerAnimator == null || defenderAnimator == null)
         {
@@ -56,21 +55,47 @@ public class SamuraiDuel : MonoBehaviour
             return;
         }
 
-        attackerAnimator.SetTrigger("Slash"); // Play attack animation
-        StartCoroutine(CheckDefend(defendKey, defenderAnimator));
+        attackerAnimator.SetTrigger("Slash");
+        StartCoroutine(CheckDefend(defendKey, dodgeLeftKey, dodgeRightKey, defenderAnimator));
     }
 
-    private IEnumerator CheckDefend(KeyCode defendKey, Animator defenderAnimator)
+    private IEnumerator CheckDefend(KeyCode defendKey, KeyCode dodgeLeftKey, KeyCode dodgeRightKey, Animator defenderAnimator)
     {
         bool defended = false;
+        bool isClap = false;
         float startTime = Time.time;
+
+        Debug.Log($"Defender needs to press: [Defend] {defendKey}, [Dodge Left] {dodgeLeftKey}, [Dodge Right] {dodgeRightKey}");
 
         while (Time.time < startTime + defendTimeWindow)
         {
+            foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
+            {
+                if (Input.GetKeyDown(key))
+                {
+                    Debug.Log($"Key pressed: {key}");
+                }
+            }
+
             if (Input.GetKeyDown(defendKey))
             {
-                Debug.Log("Defend key pressed!");
-                defenderAnimator.SetTrigger("Clap"); // Play defend animation
+                Debug.Log("Defend (Clap) Successful!");
+                defenderAnimator.SetTrigger("Clap");
+                defended = true;
+                isClap = true;
+                break;
+            }
+            else if (Input.GetKeyDown(dodgeLeftKey))
+            {
+                Debug.Log($"Dodge Left Successful! Key pressed: {dodgeLeftKey}");
+                defenderAnimator.SetTrigger("DodgeLeft");
+                defended = true;
+                break;
+            }
+            else if (Input.GetKeyDown(dodgeRightKey))
+            {
+                Debug.Log($"Dodge Right Successful! Key pressed: {dodgeRightKey}");
+                defenderAnimator.SetTrigger("DodgeRight");
                 defended = true;
                 break;
             }
@@ -79,13 +104,16 @@ public class SamuraiDuel : MonoBehaviour
 
         if (!defended)
         {
-            Debug.Log("Defend failed!");
+            Debug.Log("Defend Failed!");
             EndGame(isPlayer1Attacker ? "Player 1" : "Player 2");
         }
         else
         {
-            Debug.Log("Defend succeeded!");
-            isPlayer1Attacker = !isPlayer1Attacker; // Swap attacker
+            if (isClap)
+            {
+                isPlayer1Attacker = !isPlayer1Attacker;
+                Debug.Log("Roles Switched! New Attacker: " + (isPlayer1Attacker ? "Player 1" : "Player 2"));
+            }
         }
     }
 
@@ -93,6 +121,5 @@ public class SamuraiDuel : MonoBehaviour
     {
         gameOver = true;
         Debug.Log(winner + " WINS!");
-        // whoever is doing this Add game over logic here (e.g., show UI, restart game)
     }
 }
