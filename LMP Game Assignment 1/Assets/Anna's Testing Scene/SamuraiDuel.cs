@@ -222,6 +222,11 @@ public class SamuraiDuel : MonoBehaviour
             defenderText.text = $"Defender: {(isPlayer1Attacker ? "PLAYER 2" : "PLAYER 1")}";
     }
 
+  
+
+    [Header("End Game UI")]
+    public EndGameUI endGameUI; // 添加对 EndGameUI 的引用
+
     private void EndGame(string winner)
     {
         gameOver = true;
@@ -230,5 +235,10 @@ public class SamuraiDuel : MonoBehaviour
 
         if (winnerAudio != null && winSound != null)
             winnerAudio.PlayOneShot(winSound);
+
+        // 调用 EndGameUI 的 ShowVictory 方法
+        if (endGameUI != null)
+            endGameUI.ShowVictory(winner);
     }
+
 }
