@@ -282,9 +282,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
-  m_WholeNumbers: 1
-  m_Value: 100
+  m_MaxValue: 1
+  m_WholeNumbers: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1375,6 +1375,8 @@ MonoBehaviour:
   defenderText: {fileID: 1208566432}
   player1HealthBar: {fileID: 96755971}
   player2HealthBar: {fileID: 858242211}
+  resultText: {fileID: 465103587}
+  reactionText: {fileID: 1484815697}
   slashSound: {fileID: 8300000, guid: 442860bab5490c34bab6764bcc3f3e60, type: 3}
   dodgeSound: {fileID: 8300000, guid: 17e5f1bf571d50f4eacc60284fd2ade8, type: 3}
   clapSound: {fileID: 8300000, guid: c11b709323437f141b6a164b87614fba, type: 3}
@@ -1495,7 +1497,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &465103586
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2228,9 +2230,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 100
-  m_WholeNumbers: 1
-  m_Value: 100
+  m_MaxValue: 1
+  m_WholeNumbers: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3295,7 +3297,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1484815696
 RectTransform:
   m_ObjectHideFlags: 0
