@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SamuraiDuel : MonoBehaviour
 {
@@ -14,22 +15,32 @@ public class SamuraiDuel : MonoBehaviour
     [Header("Game Settings")]
     public float defendTimeWindow = 0.5f;
 
-    //Sound System
-    private AudioSource audioSource1;
-    private AudioSource audioSource2;
+    [Header("Health Settings")]
+    public int maxHealth = 100;
+    private int player1Health;
+    private int player2Health;
 
-    [Header("Sound Effects")] // Sound Clips
+    [Header("UI Elements")]
+    public Text attackerText; // UI Text for attacker
+    public Text defenderText; // UI Text for defender
+    public Slider player1HealthBar; // Health bar for Player 1
+    public Slider player2HealthBar; // Health bar for Player 2
+
+    [Header("Sound Effects")]
     public AudioClip slashSound;
     public AudioClip dodgeSound;
     public AudioClip clapSound;
     public AudioClip winSound;
+
+    private AudioSource audioSource1;
+    private AudioSource audioSource2;
 
     void Start()
     {
         if (player1 != null)
         {
             animator1 = player1.GetComponent<Animator>();
-            audioSource1 = player1.GetComponent<AudioSource>(); 
+            audioSource1 = player1.GetComponent<AudioSource>();
         }
         if (player2 != null)
         {
@@ -41,7 +52,15 @@ public class SamuraiDuel : MonoBehaviour
             Debug.LogError("Animator components not found on players!");
 
         if (audioSource1 == null || audioSource2 == null)
-            Debug.LogError("AudioSource components not found  on players!"); 
+            Debug.LogError("AudioSource components not found on players!");
+
+        // Initialize health
+        player1Health = maxHealth;
+        player2Health = maxHealth;
+
+        // Update UI
+        UpdateHealthBars();
+        UpdateUIText();
     }
 
     void Update()
@@ -76,7 +95,7 @@ public class SamuraiDuel : MonoBehaviour
 
         attackerAnimator.SetTrigger("Slash");
 
-        if (attackerAudio != null && slashSound != null) //Play Slash Sound
+        if (attackerAudio != null && slashSound != null)
             attackerAudio.PlayOneShot(slashSound);
 
         StartCoroutine(CheckDefend(defendKey, dodgeLeftKey, dodgeRightKey, defenderAnimator));
@@ -92,14 +111,6 @@ public class SamuraiDuel : MonoBehaviour
 
         while (Time.time < startTime + defendTimeWindow)
         {
-            foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
-            {
-                if (Input.GetKeyDown(key))
-                {
-                    Debug.Log($"Key pressed: {key}");
-                }
-            }
-
             if (Input.GetKeyDown(defendKey))
             {
                 Debug.Log("Defend (Clap) Successful!");
@@ -107,7 +118,7 @@ public class SamuraiDuel : MonoBehaviour
                 defended = true;
                 isClap = true;
 
-                if (audioSource2 != null && clapSound != null) // Play Clap Sound
+                if (audioSource2 != null && clapSound != null)
                     audioSource2.PlayOneShot(clapSound);
 
                 break;
@@ -118,7 +129,7 @@ public class SamuraiDuel : MonoBehaviour
                 defenderAnimator.SetTrigger("DodgeLeft");
                 defended = true;
 
-                if (audioSource2 != null && dodgeSound != null) //Play Dodge Sound
+                if (audioSource2 != null && dodgeSound != null)
                     audioSource2.PlayOneShot(dodgeSound);
 
                 break;
@@ -129,7 +140,7 @@ public class SamuraiDuel : MonoBehaviour
                 defenderAnimator.SetTrigger("DodgeRight");
                 defended = true;
 
-                if (audioSource2 != null && dodgeSound != null) //Play Dodge Sound
+                if (audioSource2 != null && dodgeSound != null)
                     audioSource2.PlayOneShot(dodgeSound);
 
                 break;
@@ -140,7 +151,7 @@ public class SamuraiDuel : MonoBehaviour
         if (!defended)
         {
             Debug.Log("Defend Failed!");
-            EndGame(isPlayer1Attacker ? "Player 1" : "Player 2");
+            DealDamage(isPlayer1Attacker ? "Player 1" : "Player 2");
         }
         else
         {
@@ -148,8 +159,51 @@ public class SamuraiDuel : MonoBehaviour
             {
                 isPlayer1Attacker = !isPlayer1Attacker;
                 Debug.Log("Roles Switched! New Attacker: " + (isPlayer1Attacker ? "Player 1" : "Player 2"));
+                UpdateUIText();
             }
         }
+    }
+
+    private void DealDamage(string attacker)
+    {
+        if (attacker == "Player 1")
+        {
+            player2Health -= 10; // Reduce Player 2's health
+            if (player2Health <= 0)
+            {
+                player2Health = 0;
+                EndGame("Player 1");
+            }
+        }
+        else
+        {
+            player1Health -= 10; // Reduce Player 1's health
+            if (player1Health <= 0)
+            {
+                player1Health = 0;
+                EndGame("Player 2");
+            }
+        }
+
+        UpdateHealthBars();
+    }
+
+    private void UpdateHealthBars()
+    {
+        if (player1HealthBar != null)
+            player1HealthBar.value = player1Health;
+
+        if (player2HealthBar != null)
+            player2HealthBar.value = player2Health;
+    }
+
+    private void UpdateUIText()
+    {
+        if (attackerText != null)
+            attackerText.text = "Attacker: " + (isPlayer1Attacker ? "Player 1" : "Player 2");
+
+        if (defenderText != null)
+            defenderText.text = "Defender: " + (isPlayer1Attacker ? "Player 2" : "Player 1");
     }
 
     private void EndGame(string winner)
@@ -158,8 +212,7 @@ public class SamuraiDuel : MonoBehaviour
         Debug.Log(winner + " WINS!");
 
         AudioSource winnerAudio = (winner == "Player 1") ? audioSource1 : audioSource2;
-        
-        if (winnerAudio != null && winSound != null) // Play Win Sound
+        if (winnerAudio != null && winSound != null)
             winnerAudio.PlayOneShot(winSound);
     }
 }
