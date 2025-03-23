@@ -21,10 +21,12 @@ public class SamuraiDuel : MonoBehaviour
     private int player2Health;
 
     [Header("UI Elements")]
-    public Text attackerText; // UI Text for attacker
-    public Text defenderText; // UI Text for defender
-    public Slider player1HealthBar; // Health bar for Player 1
-    public Slider player2HealthBar; // Health bar for Player 2
+    public Text attackerText;
+    public Text defenderText;
+    public Slider player1HealthBar;
+    public Slider player2HealthBar;
+    public Text resultText;     
+    public Text reactionText;    
 
     [Header("Sound Effects")]
     public AudioClip slashSound;
@@ -54,11 +56,9 @@ public class SamuraiDuel : MonoBehaviour
         if (audioSource1 == null || audioSource2 == null)
             Debug.LogError("AudioSource components not found on players!");
 
-        // Initialize health
+        // 血量系统
         player1Health = maxHealth;
         player2Health = maxHealth;
-
-        // Update UI
         UpdateHealthBars();
         UpdateUIText();
     }
@@ -107,111 +107,127 @@ public class SamuraiDuel : MonoBehaviour
         bool isClap = false;
         float startTime = Time.time;
 
-        Debug.Log($"Defender needs to press: [Defend] {defendKey}, [Dodge Left] {dodgeLeftKey}, [Dodge Right] {dodgeRightKey}");
+        
+        reactionText.gameObject.SetActive(true);
+        resultText.text = "DEFEND NOW!";
+        resultText.color = Color.yellow;
 
         while (Time.time < startTime + defendTimeWindow)
         {
+            
+            float reactionTime = Time.time - startTime;
+            reactionText.text = $"Reaction: {reactionTime:F2}s";
+            reactionText.color = Color.Lerp(Color.green, Color.red, reactionTime / defendTimeWindow);
+
             if (Input.GetKeyDown(defendKey))
             {
-                Debug.Log("Defend (Clap) Successful!");
-                defenderAnimator.SetTrigger("Clap");
-                defended = true;
-                isClap = true;
-
-                if (audioSource2 != null && clapSound != null)
-                    audioSource2.PlayOneShot(clapSound);
-
+                HandleSuccessfulDefense(defenderAnimator, true);
+                defended = isClap = true;
                 break;
             }
             else if (Input.GetKeyDown(dodgeLeftKey))
             {
-                Debug.Log($"Dodge Left Successful! Key pressed: {dodgeLeftKey}");
-                defenderAnimator.SetTrigger("DodgeLeft");
+                HandleSuccessfulDefense(defenderAnimator, false);
                 defended = true;
-
-                if (audioSource2 != null && dodgeSound != null)
-                    audioSource2.PlayOneShot(dodgeSound);
-
                 break;
             }
             else if (Input.GetKeyDown(dodgeRightKey))
             {
-                Debug.Log($"Dodge Right Successful! Key pressed: {dodgeRightKey}");
-                defenderAnimator.SetTrigger("DodgeRight");
+                HandleSuccessfulDefense(defenderAnimator, false);
                 defended = true;
-
-                if (audioSource2 != null && dodgeSound != null)
-                    audioSource2.PlayOneShot(dodgeSound);
-
                 break;
             }
             yield return null;
         }
 
+        
+        reactionText.gameObject.SetActive(false);
+
         if (!defended)
         {
-            Debug.Log("Defend Failed!");
-            DealDamage(isPlayer1Attacker ? "Player 1" : "Player 2");
+            HandleFailedDefense();
         }
         else
         {
+            StartCoroutine(ClearResultText(1.5f));
             if (isClap)
             {
                 isPlayer1Attacker = !isPlayer1Attacker;
-                Debug.Log("Roles Switched! New Attacker: " + (isPlayer1Attacker ? "Player 1" : "Player 2"));
                 UpdateUIText();
             }
         }
+    }
+
+    private void HandleSuccessfulDefense(Animator defenderAnimator, bool isClap)
+    {
+        if (isClap)
+        {
+            defenderAnimator.SetTrigger("Clap");
+            resultText.text = "PERFECT BLOCK!";
+            resultText.color = Color.cyan;
+            audioSource2.PlayOneShot(clapSound);
+        }
+        else
+        {
+            defenderAnimator.SetTrigger(Input.GetKeyDown(KeyCode.LeftArrow) ? "DodgeLeft" : "DodgeRight");
+            resultText.text = "DODGE SUCCESS!";
+            resultText.color = Color.green;
+            audioSource2.PlayOneShot(dodgeSound);
+        }
+    }
+
+    private void HandleFailedDefense()
+    {
+        resultText.text = "TOO SLOW!";
+        resultText.color = Color.red;
+        DealDamage(isPlayer1Attacker ? "Player 1" : "Player 2");
+    }
+
+    private IEnumerator ClearResultText(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        resultText.text = "";
     }
 
     private void DealDamage(string attacker)
     {
         if (attacker == "Player 1")
         {
-            player2Health -= 10; // Reduce Player 2's health
-            if (player2Health <= 0)
-            {
-                player2Health = 0;
-                EndGame("Player 1");
-            }
+            player2Health = Mathf.Clamp(player2Health - 10, 0, maxHealth);
+            if (player2Health <= 0) EndGame("Player 1");
         }
         else
         {
-            player1Health -= 10; // Reduce Player 1's health
-            if (player1Health <= 0)
-            {
-                player1Health = 0;
-                EndGame("Player 2");
-            }
+            player1Health = Mathf.Clamp(player1Health - 10, 0, maxHealth);
+            if (player1Health <= 0) EndGame("Player 2");
         }
-
         UpdateHealthBars();
     }
 
     private void UpdateHealthBars()
     {
         if (player1HealthBar != null)
-            player1HealthBar.value = player1Health;
+            player1HealthBar.value = (float)player1Health / maxHealth;
 
         if (player2HealthBar != null)
-            player2HealthBar.value = player2Health;
+            player2HealthBar.value = (float)player2Health / maxHealth;
     }
 
     private void UpdateUIText()
     {
         if (attackerText != null)
-            attackerText.text = "Attacker: " + (isPlayer1Attacker ? "Player 1" : "Player 2");
+            attackerText.text = $"Attacker: {(isPlayer1Attacker ? "PLAYER 1" : "PLAYER 2")}";
 
         if (defenderText != null)
-            defenderText.text = "Defender: " + (isPlayer1Attacker ? "Player 2" : "Player 1");
+            defenderText.text = $"Defender: {(isPlayer1Attacker ? "PLAYER 2" : "PLAYER 1")}";
     }
 
     private void EndGame(string winner)
     {
         gameOver = true;
-        Debug.Log(winner + " WINS!");
+        resultText.text = $"{winner.ToUpper()} VICTORY!";
+        AudioSource winnerAudio = winner == "Player 1" ? audioSource1 : audioSource2;
 
-        AudioSource winnerAudio = (winner == "Player 1") ? audioSource1 : audioSource2;
         if (winnerAudio != null && winSound != null)
             winnerAudio.PlayOneShot(winSound);
     }
