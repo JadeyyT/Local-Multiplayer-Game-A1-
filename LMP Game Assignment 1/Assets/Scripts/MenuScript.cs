@@ -3,6 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class MenuScript : MonoBehaviour
 {
+    public GameObject rulesPanel; 
+
     public void PlayGame()
     {
         SceneManager.LoadScene("Main");
@@ -21,5 +23,15 @@ public class MenuScript : MonoBehaviour
     public void Quit()
     {
         Application.Quit();
+    }
+
+    public void ShowRules()
+    {
+        rulesPanel.SetActive(true);
+    }
+
+    public void HideRules()
+    {
+        rulesPanel.SetActive(false);
     }
 }
