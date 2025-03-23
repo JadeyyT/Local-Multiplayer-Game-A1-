@@ -56,7 +56,7 @@ public class SamuraiDuel : MonoBehaviour
         if (audioSource1 == null || audioSource2 == null)
             Debug.LogError("AudioSource components not found on players!");
 
-        // 血量系统
+        // 血量
         player1Health = maxHealth;
         player2Health = maxHealth;
         UpdateHealthBars();
@@ -169,12 +169,21 @@ public class SamuraiDuel : MonoBehaviour
         }
         else
         {
-            defenderAnimator.SetTrigger(Input.GetKeyDown(KeyCode.LeftArrow) ? "DodgeLeft" : "DodgeRight");
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                defenderAnimator.SetTrigger("DodgeLeft");
+            }
+            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                defenderAnimator.SetTrigger("DodgeRight");
+            }
+
             resultText.text = "DODGE SUCCESS!";
             resultText.color = Color.green;
             audioSource2.PlayOneShot(dodgeSound);
         }
     }
+
 
     private void HandleFailedDefense()
     {
@@ -225,7 +234,7 @@ public class SamuraiDuel : MonoBehaviour
   
 
     [Header("End Game UI")]
-    public EndGameUI endGameUI; // 添加对 EndGameUI 的引用
+    public EndGameUI endGameUI; 
 
     private void EndGame(string winner)
     {
@@ -236,7 +245,7 @@ public class SamuraiDuel : MonoBehaviour
         if (winnerAudio != null && winSound != null)
             winnerAudio.PlayOneShot(winSound);
 
-        // 调用 EndGameUI 的 ShowVictory 方法
+        
         if (endGameUI != null)
             endGameUI.ShowVictory(winner);
     }
