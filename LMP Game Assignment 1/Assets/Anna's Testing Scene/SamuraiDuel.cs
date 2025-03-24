@@ -25,8 +25,8 @@ public class SamuraiDuel : MonoBehaviour
     public Text defenderText;
     public Slider player1HealthBar;
     public Slider player2HealthBar;
-    public Text resultText;     
-    public Text reactionText;    
+    public Text resultText;
+    public Text reactionText;
 
     [Header("Sound Effects")]
     public AudioClip slashSound;
@@ -36,6 +36,10 @@ public class SamuraiDuel : MonoBehaviour
 
     private AudioSource audioSource1;
     private AudioSource audioSource2;
+
+    [Header("Controller Input")]
+    public ControllerInput player1ControllerInput;
+    public ControllerInput player2ControllerInput;
 
     void Start()
     {
@@ -56,7 +60,7 @@ public class SamuraiDuel : MonoBehaviour
         if (audioSource1 == null || audioSource2 == null)
             Debug.LogError("AudioSource components not found on players!");
 
-        // 血量
+        
         player1Health = maxHealth;
         player2Health = maxHealth;
         UpdateHealthBars();
@@ -69,23 +73,25 @@ public class SamuraiDuel : MonoBehaviour
 
         if (isPlayer1Attacker)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            
+            if (Input.GetKeyDown(KeyCode.Space) || (player1ControllerInput != null && player1ControllerInput.isSlashing))
             {
                 Debug.Log("Player 1 Attacks!");
-                StartAttack(animator1, KeyCode.Return, KeyCode.LeftArrow, KeyCode.RightArrow, animator2, audioSource1);
+                StartAttack(animator1, KeyCode.Return, KeyCode.LeftArrow, KeyCode.RightArrow, animator2, audioSource1, player2ControllerInput);
             }
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.Return))
+            
+            if (Input.GetKeyDown(KeyCode.Return) || (player2ControllerInput != null && player2ControllerInput.isSlashing))
             {
                 Debug.Log("Player 2 Attacks!");
-                StartAttack(animator2, KeyCode.Space, KeyCode.A, KeyCode.D, animator1, audioSource2);
+                StartAttack(animator2, KeyCode.Space, KeyCode.A, KeyCode.D, animator1, audioSource2, player1ControllerInput);
             }
         }
     }
 
-    private void StartAttack(Animator attackerAnimator, KeyCode defendKey, KeyCode dodgeLeftKey, KeyCode dodgeRightKey, Animator defenderAnimator, AudioSource attackerAudio)
+    private void StartAttack(Animator attackerAnimator, KeyCode defendKey, KeyCode dodgeLeftKey, KeyCode dodgeRightKey, Animator defenderAnimator, AudioSource attackerAudio, ControllerInput defenderControllerInput)
     {
         if (attackerAnimator == null || defenderAnimator == null)
         {
@@ -98,49 +104,44 @@ public class SamuraiDuel : MonoBehaviour
         if (attackerAudio != null && slashSound != null)
             attackerAudio.PlayOneShot(slashSound);
 
-        StartCoroutine(CheckDefend(defendKey, dodgeLeftKey, dodgeRightKey, defenderAnimator));
+        StartCoroutine(CheckDefend(defendKey, dodgeLeftKey, dodgeRightKey, defenderAnimator, defenderControllerInput));
     }
 
-    private IEnumerator CheckDefend(KeyCode defendKey, KeyCode dodgeLeftKey, KeyCode dodgeRightKey, Animator defenderAnimator)
+    private IEnumerator CheckDefend(KeyCode defendKey, KeyCode dodgeLeftKey, KeyCode dodgeRightKey, Animator defenderAnimator, ControllerInput defenderControllerInput)
     {
         bool defended = false;
         bool isClap = false;
         float startTime = Time.time;
 
-        
         reactionText.gameObject.SetActive(true);
         resultText.text = "DEFEND NOW!";
         resultText.color = Color.yellow;
 
         while (Time.time < startTime + defendTimeWindow)
         {
-            
             float reactionTime = Time.time - startTime;
             reactionText.text = $"Reaction: {reactionTime:F2}s";
             reactionText.color = Color.Lerp(Color.green, Color.red, reactionTime / defendTimeWindow);
 
-            if (Input.GetKeyDown(defendKey))
+            // 检查输入
+            var input = CheckDefendInput(defendKey, dodgeLeftKey, dodgeRightKey, defenderControllerInput);
+
+            if (input.isDefending)
             {
-                HandleSuccessfulDefense(defenderAnimator, true);
+                HandleSuccessfulDefense(defenderAnimator, true, defenderControllerInput);
                 defended = isClap = true;
                 break;
             }
-            else if (Input.GetKeyDown(dodgeLeftKey))
+            else if (input.isDodgingLeft || input.isDodgingRight)
             {
-                HandleSuccessfulDefense(defenderAnimator, false);
+                HandleSuccessfulDefense(defenderAnimator, false, defenderControllerInput);
                 defended = true;
                 break;
             }
-            else if (Input.GetKeyDown(dodgeRightKey))
-            {
-                HandleSuccessfulDefense(defenderAnimator, false);
-                defended = true;
-                break;
-            }
+
             yield return null;
         }
 
-        
         reactionText.gameObject.SetActive(false);
 
         if (!defended)
@@ -158,10 +159,43 @@ public class SamuraiDuel : MonoBehaviour
         }
     }
 
-    private void HandleSuccessfulDefense(Animator defenderAnimator, bool isClap)
+    private (bool isDefending, bool isDodgingLeft, bool isDodgingRight) CheckDefendInput(KeyCode defendKey, KeyCode dodgeLeftKey, KeyCode dodgeRightKey, ControllerInput defenderControllerInput)
+    {
+        bool isDefending = false;
+        bool isDodgingLeft = false;
+        bool isDodgingRight = false;
+
+        
+        if (Input.GetKeyDown(defendKey))
+            isDefending = true;
+
+        if (Input.GetKeyDown(dodgeLeftKey))
+            isDodgingLeft = true;
+
+        if (Input.GetKeyDown(dodgeRightKey))
+            isDodgingRight = true;
+
+        
+        if (defenderControllerInput != null)
+        {
+            if (defenderControllerInput.isClapping)
+                isDefending = true;
+
+            if (defenderControllerInput.isDodgingLeft)
+                isDodgingLeft = true;
+
+            if (defenderControllerInput.isDodgingRight)
+                isDodgingRight = true;
+        }
+
+        return (isDefending, isDodgingLeft, isDodgingRight);
+    }
+
+    private void HandleSuccessfulDefense(Animator defenderAnimator, bool isClap, ControllerInput defenderControllerInput)
     {
         if (isClap)
         {
+            
             defenderAnimator.SetTrigger("Clap");
             resultText.text = "PERFECT BLOCK!";
             resultText.color = Color.cyan;
@@ -169,11 +203,12 @@ public class SamuraiDuel : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            // 闪避逻辑
+            if ((defenderControllerInput != null && defenderControllerInput.isDodgingLeft) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 defenderAnimator.SetTrigger("DodgeLeft");
             }
-            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            else if ((defenderControllerInput != null && defenderControllerInput.isDodgingRight) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
             {
                 defenderAnimator.SetTrigger("DodgeRight");
             }
@@ -183,7 +218,6 @@ public class SamuraiDuel : MonoBehaviour
             audioSource2.PlayOneShot(dodgeSound);
         }
     }
-
 
     private void HandleFailedDefense()
     {
@@ -231,10 +265,8 @@ public class SamuraiDuel : MonoBehaviour
             defenderText.text = $"Defender: {(isPlayer1Attacker ? "PLAYER 2" : "PLAYER 1")}";
     }
 
-  
-
     [Header("End Game UI")]
-    public EndGameUI endGameUI; 
+    public EndGameUI endGameUI;
 
     private void EndGame(string winner)
     {
@@ -245,9 +277,7 @@ public class SamuraiDuel : MonoBehaviour
         if (winnerAudio != null && winSound != null)
             winnerAudio.PlayOneShot(winSound);
 
-        
         if (endGameUI != null)
             endGameUI.ShowVictory(winner);
     }
-
 }
