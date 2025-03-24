@@ -156,8 +156,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 306.236, y: 1.109}
-  m_SizeDelta: {x: 144.472, y: 27.782}
+  m_AnchoredPosition: {x: 586, y: -50}
+  m_SizeDelta: {x: 149.793, y: 45.324}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114718492
 MonoBehaviour:
@@ -235,8 +235,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 0ce6a7659fe47f2488ab40aa6c557b98, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -324,8 +324,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "<b>\U0001F4A1 Tips</b>  \r\n\u2022 Only attacker can slash  \r\n\u2022
-    Only defender can dodge/catch  \r\n\u2022 Dodging is safe  \r\n\u2022 Catching
-    is risky but gives"
+    Only defender can dodge/catch  \r\n\u2022 Dodging to avoid damage  \r\n\u2022
+    Catching is risky but gives you an\n   opportunity to attack"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -534,12 +534,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "<b>\U0001F504 Game Flow</b>  \r\n\u2022 Player 1 starts as attacker  \r\n\u2022
-    Attacker: press Left Stick Down to Slash  \r\n\u2022 Defender must:  \r\n   \u2013
-    Dodge (L1 or R1)  \r\n   \u2013 OR Catch (R2)  \r\n\r\n\n<b>\U0001F9E9 Outcome</b> 
-    \r\n\u2022 If defender gets hit - they die - attacker wins  \r\n\u2022 If defender
-    catches -roles switch instantly  \r\n\r\n\n<b>\U0001F501 Next Round</b>  \r\n\u2022
-    Round continues with reversed roles  \r\n\u2022 Game resets when someone dies 
-    \r\n\r"
+    Attacker: Move Left Stick Down (L3) to Slash  \r\n\u2022 Defender must:  \r\n  
+    \u2013 Dodge (L1 or R1)  \r\n   \u2013 OR Catch (R2)  \r\n\r\n\n<b>\U0001F9E9
+    Outcome</b>  \r\n\u2022 If defender gets hit - they die - attacker wins  \r\n\u2022
+    If defender catches -roles switch instantly  \r\n\r\n\n<b>\U0001F501 Next Round</b> 
+    \r\n\u2022 Round continues with reversed roles  \r\n\u2022 Game resets when someone
+    dies  \r\n\r"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1701,7 +1701,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -169, y: 381}
+  m_AnchoredPosition: {x: -196, y: 381}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1018966104
@@ -1724,7 +1724,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Two players. Two blades. One dies.
+  m_text: Two players. Two blades. One Survives.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
@@ -2653,7 +2653,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RULES
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
