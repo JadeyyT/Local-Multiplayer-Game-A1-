@@ -8,21 +8,23 @@ public class PlayerSetup : MonoBehaviour
 
     void Start()
     {
-        
         var devices = InputSystem.devices;
-
-        
-        if (devices.Count > 0 && devices[0] is Gamepad)
+        foreach (var device in devices)
         {
-            player1ControllerInput.playerDevice = devices[0];
-            Debug.Log("Player 1 assigned to device: " + devices[0].name);
+            Debug.Log("Detected device: " + device.name);
         }
 
-        
-        if (devices.Count > 1 && devices[1] is Gamepad)
+        if (devices.Count > 0 && devices[0] is Gamepad gamepad1)
         {
-            player2ControllerInput.playerDevice = devices[1];
-            Debug.Log("Player 2 assigned to device: " + devices[1].name);
+            player1ControllerInput.playerDevice = gamepad1;
+            Debug.Log("Player 1 assigned to: " + gamepad1.name);
+        }
+
+        if (devices.Count > 1 && devices[1] is Gamepad gamepad2)
+        {
+            player2ControllerInput.playerDevice = gamepad2;
+            Debug.Log("Player 2 assigned to: " + gamepad2.name);
         }
     }
+
 }

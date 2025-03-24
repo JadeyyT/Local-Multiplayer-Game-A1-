@@ -5,26 +5,25 @@ public class ControllerInput : MonoBehaviour
 {
     private SamuraiControls controls;
 
-    public bool isSlashing;       
-    public bool isDodgingLeft;    
-    public bool isDodgingRight;   
-    public bool isClapping;       
+    public bool isSlashing;
+    public bool isDodgingLeft;
+    public bool isDodgingRight;
+    public bool isClapping;
 
     [Header("Player Input Device")]
-    public InputDevice playerDevice; 
+    public InputDevice playerDevice;
 
     void Awake()
     {
-        
         controls = new SamuraiControls();
 
-        
+        // Assign the specific input device if it's set
         if (playerDevice != null)
         {
             controls.devices = new[] { playerDevice };
         }
 
-        
+        // Bind input actions
         controls.GamepadControls.Slash.performed += ctx => isSlashing = true;
         controls.GamepadControls.Slash.canceled += ctx => isSlashing = false;
 
@@ -40,7 +39,6 @@ public class ControllerInput : MonoBehaviour
 
     void OnEnable()
     {
-        
         if (controls != null)
         {
             controls.Enable();
@@ -49,7 +47,6 @@ public class ControllerInput : MonoBehaviour
 
     void OnDisable()
     {
-        
         if (controls != null)
         {
             controls.Disable();
