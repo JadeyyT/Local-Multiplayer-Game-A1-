@@ -106,7 +106,7 @@ public partial class @SamuraiControls: IInputActionCollection2, IDisposable
                     ""id"": ""ccd50038-bc9d-4a95-ace1-daa49fe53346"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""initialStateCheck"": false
                 },
                 {

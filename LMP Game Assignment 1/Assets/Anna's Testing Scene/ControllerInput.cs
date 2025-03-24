@@ -17,10 +17,14 @@ public class ControllerInput : MonoBehaviour
     {
         controls = new SamuraiControls();
 
-        // Assign the specific input device if it's set
         if (playerDevice != null)
         {
             controls.devices = new[] { playerDevice };
+            Debug.Log("ControllerInput assigned to: " + playerDevice.name);
+        }
+        else
+        {
+            Debug.LogWarning("No playerDevice assigned in ControllerInput on " + gameObject.name);
         }
 
         // Bind input actions
