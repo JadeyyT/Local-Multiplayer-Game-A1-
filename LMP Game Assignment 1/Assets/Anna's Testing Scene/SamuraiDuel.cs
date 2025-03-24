@@ -41,6 +41,10 @@ public class SamuraiDuel : MonoBehaviour
     public ControllerInput player1ControllerInput;
     public ControllerInput player2ControllerInput;
 
+[Header("Damage Flash")]
+public GameObject player1Flash;
+public GameObject player2Flash;
+
     void Start()
     {
         if (player1 != null)
@@ -223,8 +227,37 @@ public class SamuraiDuel : MonoBehaviour
     {
         resultText.text = "TOO SLOW!";
         resultText.color = Color.red;
+
+        if (isPlayer1Attacker)
+        StartCoroutine(FlashScreen(player2Flash)); 
+    else
+        StartCoroutine(FlashScreen(player1Flash));
+
         DealDamage(isPlayer1Attacker ? "Player 1" : "Player 2");
     }
+
+    private IEnumerator FlashScreen(GameObject flashImage)
+{
+    flashImage.SetActive(true);
+
+    Image img = flashImage.GetComponent<Image>();
+    Color originalColor = img.color;
+
+    float duration = 0.3f;
+    float t = 0;
+
+    while (t < duration)
+    {
+        float alpha = Mathf.Lerp(0.4f, 0f, t / duration);
+        img.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+        t += Time.deltaTime;
+        yield return null;
+    }
+
+    img.color = originalColor;
+    flashImage.SetActive(false);
+}
+
 
     private IEnumerator ClearResultText(float delay)
     {
@@ -271,6 +304,11 @@ public class SamuraiDuel : MonoBehaviour
     private void EndGame(string winner)
     {
         gameOver = true;
+
+        // Hide any lingering flash effects
+    player1Flash.SetActive(false);
+    player2Flash.SetActive(false);
+    
         resultText.text = $"{winner.ToUpper()} VICTORY!";
         AudioSource winnerAudio = winner == "Player 1" ? audioSource1 : audioSource2;
 
