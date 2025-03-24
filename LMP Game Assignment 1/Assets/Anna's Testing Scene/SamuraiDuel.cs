@@ -37,13 +37,13 @@ public class SamuraiDuel : MonoBehaviour
     private AudioSource audioSource1;
     private AudioSource audioSource2;
 
-    [Header("Controller Input")]
-    public ControllerInput player1ControllerInput;
-    public ControllerInput player2ControllerInput;
+    [Header("Player References")]
+    [SerializeField] private ControllerInput _player1Input;
+    [SerializeField] private ControllerInput _player2Input;
 
-[Header("Damage Flash")]
-public GameObject player1Flash;
-public GameObject player2Flash;
+    [Header("Damage Flash")]
+    public GameObject player1Flash;
+    public GameObject player2Flash;
 
     void Start()
     {
@@ -64,7 +64,6 @@ public GameObject player2Flash;
         if (audioSource1 == null || audioSource2 == null)
             Debug.LogError("AudioSource components not found on players!");
 
-        
         player1Health = maxHealth;
         player2Health = maxHealth;
         UpdateHealthBars();
@@ -77,20 +76,18 @@ public GameObject player2Flash;
 
         if (isPlayer1Attacker)
         {
-            
-            if (Input.GetKeyDown(KeyCode.Space) || (player1ControllerInput != null && player1ControllerInput.isSlashing))
+            if (Input.GetKeyDown(KeyCode.Space) || (_player1Input != null && _player1Input.IsSlashing))
             {
                 Debug.Log("Player 1 Attacks!");
-                StartAttack(animator1, KeyCode.Return, KeyCode.LeftArrow, KeyCode.RightArrow, animator2, audioSource1, player2ControllerInput);
+                StartAttack(animator1, KeyCode.Return, KeyCode.LeftArrow, KeyCode.RightArrow, animator2, audioSource1, _player2Input);
             }
         }
         else
         {
-            
-            if (Input.GetKeyDown(KeyCode.Return) || (player2ControllerInput != null && player2ControllerInput.isSlashing))
+            if (Input.GetKeyDown(KeyCode.Return) || (_player2Input != null && _player2Input.IsSlashing))
             {
                 Debug.Log("Player 2 Attacks!");
-                StartAttack(animator2, KeyCode.Space, KeyCode.A, KeyCode.D, animator1, audioSource2, player1ControllerInput);
+                StartAttack(animator2, KeyCode.Space, KeyCode.A, KeyCode.D, animator1, audioSource2, _player1Input);
             }
         }
     }
@@ -127,7 +124,6 @@ public GameObject player2Flash;
             reactionText.text = $"Reaction: {reactionTime:F2}s";
             reactionText.color = Color.Lerp(Color.green, Color.red, reactionTime / defendTimeWindow);
 
-            // 检查输入
             var input = CheckDefendInput(defendKey, dodgeLeftKey, dodgeRightKey, defenderControllerInput);
 
             if (input.isDefending)
@@ -165,31 +161,15 @@ public GameObject player2Flash;
 
     private (bool isDefending, bool isDodgingLeft, bool isDodgingRight) CheckDefendInput(KeyCode defendKey, KeyCode dodgeLeftKey, KeyCode dodgeRightKey, ControllerInput defenderControllerInput)
     {
-        bool isDefending = false;
-        bool isDodgingLeft = false;
-        bool isDodgingRight = false;
+        bool isDefending = Input.GetKeyDown(defendKey);
+        bool isDodgingLeft = Input.GetKeyDown(dodgeLeftKey);
+        bool isDodgingRight = Input.GetKeyDown(dodgeRightKey);
 
-        
-        if (Input.GetKeyDown(defendKey))
-            isDefending = true;
-
-        if (Input.GetKeyDown(dodgeLeftKey))
-            isDodgingLeft = true;
-
-        if (Input.GetKeyDown(dodgeRightKey))
-            isDodgingRight = true;
-
-        
         if (defenderControllerInput != null)
         {
-            if (defenderControllerInput.isClapping)
-                isDefending = true;
-
-            if (defenderControllerInput.isDodgingLeft)
-                isDodgingLeft = true;
-
-            if (defenderControllerInput.isDodgingRight)
-                isDodgingRight = true;
+            isDefending = isDefending || defenderControllerInput.IsClapping;
+            isDodgingLeft = isDodgingLeft || defenderControllerInput.IsDodgingLeft;
+            isDodgingRight = isDodgingRight || defenderControllerInput.IsDodgingRight;
         }
 
         return (isDefending, isDodgingLeft, isDodgingRight);
@@ -199,7 +179,6 @@ public GameObject player2Flash;
     {
         if (isClap)
         {
-            
             defenderAnimator.SetTrigger("Clap");
             resultText.text = "PERFECT BLOCK!";
             resultText.color = Color.cyan;
@@ -207,12 +186,11 @@ public GameObject player2Flash;
         }
         else
         {
-            // 闪避逻辑
-            if ((defenderControllerInput != null && defenderControllerInput.isDodgingLeft) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            if ((defenderControllerInput != null && defenderControllerInput.IsDodgingLeft) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
             {
                 defenderAnimator.SetTrigger("DodgeLeft");
             }
-            else if ((defenderControllerInput != null && defenderControllerInput.isDodgingRight) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            else if ((defenderControllerInput != null && defenderControllerInput.IsDodgingRight) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
             {
                 defenderAnimator.SetTrigger("DodgeRight");
             }
@@ -229,35 +207,34 @@ public GameObject player2Flash;
         resultText.color = Color.red;
 
         if (isPlayer1Attacker)
-        StartCoroutine(FlashScreen(player2Flash)); 
-    else
-        StartCoroutine(FlashScreen(player1Flash));
+            StartCoroutine(FlashScreen(player2Flash));
+        else
+            StartCoroutine(FlashScreen(player1Flash));
 
         DealDamage(isPlayer1Attacker ? "Player 1" : "Player 2");
     }
 
     private IEnumerator FlashScreen(GameObject flashImage)
-{
-    flashImage.SetActive(true);
-
-    Image img = flashImage.GetComponent<Image>();
-    Color originalColor = img.color;
-
-    float duration = 0.3f;
-    float t = 0;
-
-    while (t < duration)
     {
-        float alpha = Mathf.Lerp(0.4f, 0f, t / duration);
-        img.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-        t += Time.deltaTime;
-        yield return null;
+        flashImage.SetActive(true);
+
+        Image img = flashImage.GetComponent<Image>();
+        Color originalColor = img.color;
+
+        float duration = 0.3f;
+        float t = 0;
+
+        while (t < duration)
+        {
+            float alpha = Mathf.Lerp(0.4f, 0f, t / duration);
+            img.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        img.color = originalColor;
+        flashImage.SetActive(false);
     }
-
-    img.color = originalColor;
-    flashImage.SetActive(false);
-}
-
 
     private IEnumerator ClearResultText(float delay)
     {
@@ -305,10 +282,9 @@ public GameObject player2Flash;
     {
         gameOver = true;
 
-        // Hide any lingering flash effects
-    player1Flash.SetActive(false);
-    player2Flash.SetActive(false);
-    
+        player1Flash.SetActive(false);
+        player2Flash.SetActive(false);
+
         resultText.text = $"{winner.ToUpper()} VICTORY!";
         AudioSource winnerAudio = winner == "Player 1" ? audioSource1 : audioSource2;
 

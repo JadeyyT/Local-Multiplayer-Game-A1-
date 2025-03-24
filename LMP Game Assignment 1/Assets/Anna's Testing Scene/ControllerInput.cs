@@ -1,59 +1,62 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(PlayerInput))]
 public class ControllerInput : MonoBehaviour
 {
-    private SamuraiControls controls;
+    // 输入状态
+    public bool IsSlashing { get; private set; }
+    public bool IsDodgingLeft { get; private set; }
+    public bool IsDodgingRight { get; private set; }
+    public bool IsClapping { get; private set; }
 
-    public bool isSlashing;
-    public bool isDodgingLeft;
-    public bool isDodgingRight;
-    public bool isClapping;
+    // 输入配置
+    [Header("Keyboard Bindings")]
+    [SerializeField] private KeyCode _keyboardSlash = KeyCode.Space;
+    [SerializeField] private KeyCode _keyboardDodgeLeft = KeyCode.A;
+    [SerializeField] private KeyCode _keyboardDodgeRight = KeyCode.D;
+    [SerializeField] private KeyCode _keyboardClap = KeyCode.Q;
 
-    [Header("Player Input Device")]
-    public InputDevice playerDevice;
+    // 内部状态
+    private PlayerInput _playerInput;
+    private bool _usingGamepad;
 
-    void Awake()
+    private void Awake()
     {
-        controls = new SamuraiControls();
+        _playerInput = GetComponent<PlayerInput>();
+        _usingGamepad = _playerInput.currentControlScheme == "Gamepad";
 
-        if (playerDevice != null)
-        {
-            controls.devices = new[] { playerDevice };
-            Debug.Log("ControllerInput assigned to: " + playerDevice.name);
-        }
-        else
-        {
-            Debug.LogWarning("No playerDevice assigned in ControllerInput on " + gameObject.name);
-        }
-
-        // Bind input actions
-        controls.GamepadControls.Slash.performed += ctx => isSlashing = true;
-        controls.GamepadControls.Slash.canceled += ctx => isSlashing = false;
-
-        controls.GamepadControls.DodgeLeft.performed += ctx => isDodgingLeft = true;
-        controls.GamepadControls.DodgeLeft.canceled += ctx => isDodgingLeft = false;
-
-        controls.GamepadControls.DodgeRight.performed += ctx => isDodgingRight = true;
-        controls.GamepadControls.DodgeRight.canceled += ctx => isDodgingRight = false;
-
-        controls.GamepadControls.Clap.performed += ctx => isClapping = true;
-        controls.GamepadControls.Clap.canceled += ctx => isClapping = false;
+        // 初始化输入绑定
+        SetupInputCallbacks();
     }
 
-    void OnEnable()
+    private void SetupInputCallbacks()
     {
-        if (controls != null)
-        {
-            controls.Enable();
-        }
+        var actions = _playerInput.actions;
+
+        // 手柄输入绑定
+        actions["Slash"].performed += _ => IsSlashing = true;
+        actions["Slash"].canceled += _ => IsSlashing = false;
+
+        actions["DodgeLeft"].performed += _ => IsDodgingLeft = true;
+        actions["DodgeLeft"].canceled += _ => IsDodgingLeft = false;
+
+        actions["DodgeRight"].performed += _ => IsDodgingRight = true;
+        actions["DodgeRight"].canceled += _ => IsDodgingRight = false;
+
+        actions["Clap"].performed += _ => IsClapping = true;
+        actions["Clap"].canceled += _ => IsClapping = false;
     }
 
-    void OnDisable()
+    private void Update()
     {
-        if (controls != null)
+        // 统一处理键盘输入
+        if (!_usingGamepad)
         {
-            controls.Disable();
+            IsSlashing = Input.GetKey(_keyboardSlash);
+            IsDodgingLeft = Input.GetKey(_keyboardDodgeLeft);
+            IsDodgingRight = Input.GetKey(_keyboardDodgeRight);
+            IsClapping = Input.GetKey(_keyboardClap);
         }
     }
 }

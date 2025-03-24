@@ -3,38 +3,39 @@ using UnityEngine.InputSystem;
 
 public class PlayerSetup : MonoBehaviour
 {
-    public ControllerInput player1ControllerInput;
-    public ControllerInput player2ControllerInput;
+    [Header("Player Input Settings")]
+    [SerializeField] private PlayerInput _player1Input;
+    [SerializeField] private PlayerInput _player2Input;
 
-    void Start()
+    [Header("Control Schemes")]
+    [SerializeField] private string _keyboardControlScheme = "Keyboard";
+    [SerializeField] private string _gamepadControlScheme = "Gamepad";
+
+    private void Start()
     {
-        // Log all connected devices for debugging
-        var devices = InputSystem.devices;
-        foreach (var device in devices)
-        {
-            Debug.Log("Detected device: " + device.name);
-        }
+        ConfigurePlayerInputs();
+    }
 
-        // Assign first gamepad to Player 1
-        if (devices.Count > 0 && devices[0] is Gamepad gamepad1)
+    private void ConfigurePlayerInputs()
+    {
+        var gamepads = Gamepad.all;
+
+        if (gamepads.Count > 0)
         {
-            player1ControllerInput.playerDevice = gamepad1;
-            Debug.Log("Player 1 assigned to: " + gamepad1.name);
+            _player1Input.SwitchCurrentControlScheme(_gamepadControlScheme, gamepads[0]);
         }
         else
         {
-            Debug.LogWarning("No gamepad found for Player 1");
+            _player1Input.SwitchCurrentControlScheme(_keyboardControlScheme, Keyboard.current);
         }
 
-        // Assign second gamepad to Player 2
-        if (devices.Count > 1 && devices[1] is Gamepad gamepad2)
+        if (gamepads.Count > 1)
         {
-            player2ControllerInput.playerDevice = gamepad2;
-            Debug.Log("Player 2 assigned to: " + gamepad2.name);
+            _player2Input.SwitchCurrentControlScheme(_gamepadControlScheme, gamepads[1]);
         }
         else
         {
-            Debug.LogWarning("No gamepad found for Player 2");
+            _player2Input.SwitchCurrentControlScheme(_keyboardControlScheme, Keyboard.current);
         }
     }
 }
