@@ -1,0 +1,94 @@
+{
+    "name": "SamuraiControls",
+    "maps": [
+        {
+            "name": "GamepadControls",
+            "id": "533b2ed4-a7fe-4c2e-bcce-8bcb91431d56",
+            "actions": [
+                {
+                    "name": "Dodge Left",
+                    "type": "Button",
+                    "id": "68c0e517-7d2b-462c-84dc-81129503fe15",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Slash",
+                    "type": "Button",
+                    "id": "ccd50038-bc9d-4a95-ace1-daa49fe53346",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Dodge Right",
+                    "type": "Button",
+                    "id": "e4d3dd22-f50d-4be3-86a4-1904640ff5da",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Clap",
+                    "type": "Button",
+                    "id": "f33e123e-b354-4007-b6e0-7ce86e2ad719",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c3bc377c-9803-4349-a3d3-64d1ae69762c",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dodge Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "29919cea-da85-4b59-b237-5fd0bc15411e",
+                    "path": "<Gamepad>/leftStick/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Slash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5747f87c-12d2-440c-9b23-9f61740c8973",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Dodge Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6d8f1bf1-d0c8-406f-916a-3fc95f248d81",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Clap",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
