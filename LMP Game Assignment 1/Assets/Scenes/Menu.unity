@@ -293,14 +293,14 @@ RectTransform:
   m_GameObject: {fileID: 117055618}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.80201, y: 0.80201, z: 0.80201}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 154485348}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 7, y: -693}
+  m_AnchoredPosition: {x: -5, y: -731}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &117055620
@@ -324,8 +324,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "<b>\U0001F4A1 Tips</b>  \r\n\u2022 Only the attacker can slash  \r\n\u2022
-    Only the defender can dodge or catch  \r\n\u2022 Dodging is safer, but catching
-    gives you control  "
+    Only the defender can dodge or catch  \r\n\u2022 Dodging avoids damage but doesn\u2019t
+    change roles  \r\n\u2022 Catching is risky but lets you take control  \r\n\u2022
+    You have limited lives \u2014 be careful!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -536,12 +537,13 @@ MonoBehaviour:
       m_Calls: []
   m_text: "<b>\U0001F504 Game Flow</b>  \r\n\u2022 Player 1 starts as attacker  \r\n\u2022
     Attacker: Press Space to Slash  \r\n\u2022 Defender must:  \r\n   \u2013 Dodge
-    (A or D for Player 1, \u2190 or \u2192 for Player 2)  \r\n   \u2013 OR Catch
-    (Space for Player 1, Enter for Player 2)  \r\n\r\n<b>\U0001F9E9 Outcome</b> 
-    \r\n\u2022 If defender gets hit \u2013 they die \u2013 attacker wins  \r\n\u2022
-    If defender catches \u2013 roles switch instantly  \r\n\r\n<b>\U0001F501 Next
-    Round</b>  \r\n\u2022 Round continues with reversed roles  \r\n\u2022 Game resets
-    when someone dies  "
+    (\u2190 or \u2192 for Player 2, A or D for Player 1)  \r\n   \u2013 OR Catch
+    (Enter for Player 2, Space for Player 1)  \r\n\r\n<b>\U0001F9E9 Outcome</b> 
+    \r\n\u2022 If defender gets hit \u2013 they lose 1 life  \r\n\u2022 If defender
+    catches \u2013 roles switch instantly  \r\n\u2022 When a player runs out of lives
+    \u2013 they die \u2013 the other player wins  \r\n\r\n<b>\U0001F501 Next Round</b> 
+    \r\n\u2022 Round continues with reversed roles if catch succeeds  \r\n\u2022
+    Game resets when someone runs out of lives  "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2144,7 +2146,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 332, y: 224}
+  m_AnchoredPosition: {x: 508, y: 224}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1298314833
@@ -2410,7 +2412,7 @@ RectTransform:
   m_GameObject: {fileID: 1389211829}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0700002, y: 1.2587577, z: 1}
+  m_LocalScale: {x: 0.93381053, y: 1.098543, z: 0.87272}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1518206552}
@@ -2420,7 +2422,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 24.465332, y: 490.31027}
+  m_AnchoredPosition: {x: 24.465332, y: 495}
   m_SizeDelta: {x: -1169.84, y: -938.546}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1389211831
@@ -2847,7 +2849,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -760, y: 414}
+  m_AnchoredPosition: {x: -760, y: 494}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2029861442
